@@ -73,4 +73,4 @@ while True:
 
     save_message("assistant", response)
 
-    print(f"AI: {response}")
+    print(f"Jay: {response}")

@@ -17,7 +17,11 @@ from tools import (
     forget_memory_tool,
     git_status,
     git_log,
-    git_diff
+    git_diff,
+    git_add,
+    git_commit,
+    git_push,
+    git_clone
 )
 
 load_dotenv()
@@ -44,11 +48,17 @@ tools = [
         "type": "function",
         "function": {
             "name": "list_files",
-            "description": "List the files and directories in the current "
-            "working directory.",
+            "description": "List files and directories inside the specified "
+            "directory, including hidden entries. Defaults to the current "
+            "directory.",
             "parameters": {
                 "type": "object",
-                "properties": {},
+                "properties": {
+                    "directory": {
+                        "type": "string",
+                        "description": "The directory to inspect. Default to the current directory."
+                    }
+                },
                 "required": []
             }
         }
@@ -194,11 +204,90 @@ tools = [
         "type": "function",
         "function": {
             "name": "git_diff",
-            "description": "Show the changes that have been made to tracked files but have not been committed.",
+            "description": "Show changes to tracked files that have not been committed.",
             "parameters": {
                 "type": "object",
                 "properties": {},
                 "required": []
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "git_add",
+            "description": "Stage specified files for a Git commit after user confirmation.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "files": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "A list of file paths to stage."
+                    }
+                },
+                "required": ["files"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "git_commit",
+            "description": "Create a Git commit with the supplied message after user confirmation.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "The commit message."
+                    }
+                },
+                "required": ["message"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "git_push",
+            "description": "Push local commits to a remote Git repository after user confirmation.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "remote": {
+                        "type": "string",
+                        "description": "The Git remote name, usually origin."
+                    },
+                    "branch": {
+                        "type": "string",
+                        "description": "The branch to push, usually main."
+                    }
+                },
+                "required": []
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "git_clone",
+            "description": "Clone a Git repository after user confirmation.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "repository_url": {
+                        "type": "string",
+                        "description": "The repository URL."
+                    },
+                    "destination": {
+                        "type": "string",
+                        "description": "Optional local directory for the cloned repository."
+                    }
+                },
+                "required": ["repository_url"]
             }
         }
     }
@@ -215,7 +304,11 @@ available_tools = {
     "forget_memory": forget_memory_tool,
     "git_status": git_status,
     "git_log": git_log,
-    "git_diff": git_diff
+    "git_diff": git_diff,
+    "git_add": git_add,
+    "git_commit": git_commit,
+    "git_push": git_push,
+    "git_clone": git_clone
 }
 
 
@@ -277,14 +370,21 @@ Important memories:
             tool_function = available_tools.get(tool_name)
 
             if tool_function:
-                arguments = json.loads(tool_call.function.arguments)
+                try:
+                    arguments = json.loads(tool_call.function.arguments)
 
-                result = tool_function(**arguments)
+                    if not isinstance(arguments, dict):
+                        raise ValueError("Tool arguments must be a JSON object.")
+
+                    result = tool_function(**arguments)
+
+                except (json.JSONDecodeError, TypeError, ValueError) as error:
+                    result = f"Tool execution error for {tool_name}: {error}"
 
                 messages.append({
                     "role": "tool",
                     "tool_call_id": tool_call.id,
-                    "content": result
+                    "content": str(result)
                 })
 
         try:
