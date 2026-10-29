@@ -1,202 +1,281 @@
 # Jay — Terminal AI Assistant
 
-Jay is a Python-based AI assistant designed to bring AI-powered programming assistance and Linux terminal operations into one application.
+**Jay is an AI-powered programming and Linux assistant designed to bring AI assistance, terminal operations, code exploration, and Git workflows into one command-line application.**
 
-Jay can answer programming questions, inspect files, search code, manage persistent memories, and perform Git operations through an integrated set of tools.
+Built with Python, Jay can answer programming questions, inspect files, search code, manage persistent memories, execute terminal commands, and assist with Git operations.
+
+Jay is actively evolving from a personal development project into a portable, easy-to-install AI assistant for Linux users.
 
 ## Features
 
-- **AI-powered assistance:** Interact with an AI assistant for programming and Linux-related tasks.
-- **Linux command execution:** Execute terminal commands with confirmation for commands that require approval.
+- **AI-powered assistance:** Ask programming questions and get help with Linux-related tasks.
+- **Linux command execution:** Run terminal commands through Jay's `/run` interface, with confirmation for commands that require approval.
 - **File operations:** List files and read file contents.
-- **Code analysis:** Search code and locate files.
+- **Code exploration:** Search code and locate files.
 - **Persistent memory:** Store and manage memories using SQLite.
-- **Git integration:** Check repository status, view commit history and differences, stage files, commit changes, push commits, and clone repositories.
-- **Automated testing:** Test command-execution behavior using Python's `unittest` framework.
+- **Git integration:** Check repository status, inspect commit history and changes, stage files, create commits, push changes, and clone repositories.
+- **Automated testing:** Test terminal command-execution behavior using Python's `unittest` framework.
+- **Debian packaging:** Install Jay system-wide through a Debian package.
+- **APT repository:** Install and reinstall Jay through a public APT repository.
 
 ## Technology Stack
 
-- Python 3.12+
-- OpenRouter API
-- OpenAI Python client
-- SQLite
-- Git
-- Linux
-
-## Prerequisites
-
-Before installing Jay, ensure you have:
-
-- Python 3.12 or a compatible newer version.
-- Git.
-- A Linux environment.
-- An OpenRouter account and API key.
-- An internet connection for AI requests.
+- **Language:** Python
+- **AI integration:** OpenRouter API and OpenAI Python client
+- **Database:** SQLite
+- **Version control:** Git
+- **Packaging:** Python packaging tools and Debian packages
+- **Distribution:** APT repository hosted on GitHub Pages
+- **Platform:** Linux
 
 ## Installation
 
-### 1. Clone the repository
+Jay currently provides a Debian package for compatible **AMD64 Ubuntu/Debian systems using Python 3.12**.
 
-Open your terminal and run:
+### Option 1: Install through the APT repository
+
+First, configure Jay's repository signing key:
+
+```bash
+sudo install -d -m 0755 /etc/apt/keyrings
+
+curl -fsSL https://jbishop-cyber.github.io/jay-apt/public/jay-archive-key.gpg \
+  -o /tmp/jay-archive-key.gpg
+
+sudo install -m 0644 /tmp/jay-archive-key.gpg \
+  /etc/apt/keyrings/jay-archive-key.gpg
+```
+
+Add the repository:
+
+```bash
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/jay-archive-key.gpg] https://jbishop-cyber.github.io/jay-apt stable main" \
+  | sudo tee /etc/apt/sources.list.d/jay.list
+```
+
+Update the package list:
+
+```bash
+sudo apt update
+```
+
+Install Jay:
+
+```bash
+sudo apt install jay-terminal-assistant
+```
+
+After installation, launch Jay from any directory:
+
+```bash
+jay
+```
+
+**Note:** The repository configuration is required only once per system. The current package targets AMD64 systems with Python 3.12 and is not yet a universal Linux package.
+
+### Option 2: Run from source
+
+Clone the repository:
 
 ```bash
 git clone https://github.com/Jbishop-cyber/terminal-ai.git
 cd terminal-ai
 ```
 
-### 2. Create a virtual environment
-
-Create an isolated Python environment:
+Create and activate a virtual environment:
 
 ```bash
 python3 -m venv .venv
-```
-
-Activate it:
-
-```bash
 source .venv/bin/activate
 ```
 
-### 3. Install dependencies
-
-Upgrade pip and install the project's dependencies:
+Install the dependencies:
 
 ```bash
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 4. Configure your API key
-
-Jay uses OpenRouter to access an AI model.
-
-Create a `.env` file in the project root:
-
-```bash
-nano .env
-```
-
-Add the following line, replacing the placeholder with your own API key:
-
-```dotenv
-OPENROUTER_API_KEY=your_openrouter_api_key_here
-```
-
-Save the file and exit the editor.
-
-**Security:** Never publish your API key or commit your `.env` file to GitHub. Each user must configure their own API key.
-
-### 5. Run Jay
-
-Start the application:
+Configure your API key as described below, then launch Jay:
 
 ```bash
 python main.py
 ```
 
-You should see a welcome message and the `>>` input prompt.
+## Configuration
 
-Enter a programming question or a request for assistance.
+Jay uses OpenRouter to access AI models.
 
-To exit, type:
+For development from source, create a `.env` file in the project root:
 
-```text
-exit
+```bash
+nano .env
 ```
 
-## Using Jay
+Add your API key:
+
+```dotenv
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+```
+
+Replace the placeholder with your own key.
+
+For the installed Debian package, Jay checks for a user configuration file at:
+
+```text
+~/.config/jay/.env
+```
+
+Create it with:
+
+```bash
+mkdir -p ~/.config/jay
+nano ~/.config/jay/.env
+```
+
+Add the same `OPENROUTER_API_KEY` entry.
+
+**Security:** Never commit API keys, `.env` files, or other secrets to GitHub. Each user must provide their own API key.
+
+## Usage
+
+### Start Jay
+
+```bash
+jay
+```
+
+When running from source:
+
+```bash
+python main.py
+```
 
 ### Ask a programming question
 
-At the `>>` prompt, enter a question, such as:
-
 ```text
-Explain how Python dictionaries work.
+>> Explain how Python dictionaries work.
 ```
 
-### Inspect files
+### Run a terminal command
 
-You can ask Jay to list files in a directory or read a file's contents.
+```text
+>> /run pwd
+```
+
+Jay executes supported terminal commands through its command interface. Commands requiring confirmation prompt the user before execution.
+
+### Explore files and code
+
+You can ask Jay to list files, read file contents, locate files, or search code.
 
 For example:
 
 ```text
-List the files in the current directory.
+>> List the files in the current directory.
 ```
-
-### Execute a Linux command
-
-Jay supports direct terminal commands through the `/run` interface.
-
-For example:
-
-```text
-/run pwd
-```
-
-Commands requiring confirmation prompt the user before execution.
 
 ### Work with Git
 
-You can ask Jay to perform supported Git operations, including:
+Jay supports Git workflows including:
 
 - Checking repository status.
 - Viewing commit history.
 - Reviewing changes.
 - Staging files.
 - Creating commits.
-- Pushing commits to a remote repository.
+- Pushing commits.
 - Cloning repositories.
 
-Some operations require explicit confirmation before execution.
+Some operations require confirmation.
+
+### Exit Jay
+
+```text
+>> exit
+```
+
+## Data Storage
+
+Jay stores persistent conversation data in an SQLite database located at:
+
+```text
+~/.local/share/jay/conversation.db
+```
+
+For the Debian installation, configuration and conversation data are stored separately from the application files. Removing the package preserves these user files.
 
 ## Running Tests
 
-To run the automated terminal tests, execute:
+From the source project, activate the virtual environment and run:
 
 ```bash
 python -m unittest -v test_terminal
 ```
 
-These tests cover safe command execution, cancellation of a command requiring confirmation, and execution after approval.
+The terminal tests cover command execution, cancellation of commands requiring confirmation, and execution after approval.
 
 ## Troubleshooting
 
 ### Missing or invalid API key
 
-Check that your `.env` file exists in the project root and contains a valid `OPENROUTER_API_KEY`.
+Check that your configuration file exists and contains a valid `OPENROUTER_API_KEY`.
+
+For a source installation, check the project's `.env` file. For a Debian installation, check `~/.config/jay/.env`.
+
+Never share your API key when requesting troubleshooting help.
 
 ### API rate limits
 
-OpenRouter may limit requests based on your account allowance or the availability of the selected model. If you receive a rate-limit error, check your account limits and retry when permitted.
+OpenRouter may restrict requests based on account allowances or model availability. Check your account limits and the selected model before retrying.
 
 ### Missing Python dependencies
 
-Ensure your virtual environment is activated and run:
+For a source installation, activate the virtual environment and run:
 
 ```bash
 pip install -r requirements.txt
 ```
 
+For the Debian package, reinstall through APT if the application environment is damaged:
+
+```bash
+sudo apt install --reinstall jay-terminal-assistant
+```
+
 ### Git command failures
 
-Check that Git is installed and that the current directory is the intended repository. Operations involving remote repositories may also require appropriate authentication and permissions.
+Ensure Git is installed and that the current directory is the intended repository. Remote operations may require appropriate authentication and permissions.
 
 ## Safety Notice
 
-Jay is an experimental learning project, not a security sandbox.
+Jay is an experimental development project, not a security sandbox.
 
-Command confirmation provides an additional safeguard, but it does not guarantee that every command is safe. Review commands carefully before approving them, especially commands that modify files, use elevated privileges, or interact with remote repositories.
+Command confirmation provides an additional safeguard but does not guarantee that every command is safe. Review commands carefully before approving them, especially commands that modify files, use elevated privileges, or interact with remote repositories.
 
 Run Jay with appropriate user permissions and avoid granting unnecessary privileges.
 
-## Project Status
+## Roadmap
 
-Jay is under active development. Features, safety controls, and reliability may change as the project evolves.
+Jay is under active development. Planned improvements include:
+
+- Automating package releases.
+- Expanding compatibility across Linux distributions.
+- Supporting additional processor architectures and Python environments.
+- Improving programming assistance and codebase understanding.
+- Strengthening testing and command-safety controls.
+- Expanding documentation and contribution opportunities.
+
+These are development goals, not promises that every feature is already available.
 
 ## Author
 
 **Justice Bishop**
 
 GitHub: https://github.com/Jbishop-cyber
+
+## Repository
+
+Source code: https://github.com/Jbishop-cyber/terminal-ai
+
+APT repository: https://github.com/Jbishop-cyber/jay-apt
