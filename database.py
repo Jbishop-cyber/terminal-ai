@@ -2,8 +2,19 @@ import sqlite3
 import os
 # import string
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATABASE = os.path.join(BASE_DIR, "conversation.db")
+# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# DATABASE = os.path.join(BASE_DIR, "conversation.db")
+
+DATA_DIR = os.path.join(
+    os.path.expanduser("~"),
+    ".local",
+    "share",
+    "jay",
+)
+
+os.makedirs(DATA_DIR, exist_ok=True)
+
+DATABASE = os.path.join(DATA_DIR, "conversation.db")
 
 STOP_WORDS = {
     "what", "is", "my", "the", "a", "an",

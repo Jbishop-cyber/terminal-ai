@@ -37,40 +37,45 @@ You can manage memories using the memory tools.
 When updating or forgetting a memory, use the Memory ID provided above.
 """
 
-init_database()
 
-conversation = load_messages()
+def main():
+    init_database()
 
+    conversation = load_messages()
 
-print("Hello, I'm Jay, your programming and linux assistant 😏")
+    print("Hello, I'm Jay, your programming and linux assistant 😏")
 
-print("Type (exit) to quit")
+    print("Type (exit) to quit")
 
-while True:
-    text = input(">> ").strip()
+    while True:
+        text = input(">> ").strip()
 
-    if text.lower() == "exit":
-        print("See Ya 🚶🏻‍♀️")
-        break
+        if text.lower() == "exit":
+            print("See Ya 🚶🏻‍♀️")
+            break
 
-    if text.startswith("/run"):
-        command_str = text.removeprefix("/run").strip()
+        if text.startswith("/run"):
+            command_str = text.removeprefix("/run").strip()
 
-        if not command_str:
-            print("Usage: /run <command>")
+            if not command_str:
+                print("Usage: /run <command>")
+                continue
+
+            command_list = command_str.split()
+
+            output = run_command(command_list)
+            print(output)
+
             continue
 
-        command_list = command_str.split()
+        save_message("user", text)
 
-        output = run_command(command_list)
-        print(output)
+        response = get_response(text, system_prompt, conversation)
 
-        continue
+        save_message("assistant", response)
 
-    save_message("user", text)
+        print(f"Jay: {response}")
 
-    response = get_response(text, system_prompt, conversation)
 
-    save_message("assistant", response)
-
-    print(f"Jay: {response}")
+if __name__ == "__main__":
+    main()

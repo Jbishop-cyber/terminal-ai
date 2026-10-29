@@ -1,0 +1,11 @@
+Package: jay-terminal-assistant
+Version: 0.1.0
+Section: utils
+Priority: optional
+Architecture: amd64
+Depends: python3 (>= 3.12), python3 (<< 3.13), python3-venv
+Maintainer: Justice Bishop <globalresearchinstitution@gmail.com>
+Description: Jay programming and Linux terminal AI assistant
+ Jay is a command-line AI assistant that helps with programming,
+ Linux commands, file operations, code search, and Git workflows.
+ 

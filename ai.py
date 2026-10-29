@@ -24,7 +24,17 @@ from tools import (
     git_clone
 )
 
-load_dotenv()
+# load_dotenv()
+
+from pathlib import Path
+
+PROJECT_ENV = Path(__file__).resolve().parent / ".env"
+USER_ENV = Path.home() / ".config" / "jay" / ".env"
+
+if USER_ENV.exists():
+    load_dotenv(USER_ENV)
+else:
+    load_dotenv(PROJECT_ENV)
 
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",

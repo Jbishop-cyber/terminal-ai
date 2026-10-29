@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+    configure)
+        if [ ! -x /opt/jay/.venv/bin/python ]; then
+            python3 -m venv /opt/jay/.venv
+        fi
+
+        /opt/jay/.venv/bin/python -m pip install \
+            --no-index \
+            --find-links=/opt/jay/wheels \
+            jay-terminal-assistant==0.1.0
+        ;;
+esac
+
+exit 0

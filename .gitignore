@@ -4,3 +4,13 @@ __pycache__/
 *.pyc
 conversation.db
 jay-clone-test/
+
+# Python packaging artifacts
+build/
+dist/
+*.egg-info/
+
+# Debian package build output
+packaging/wheels/
+packaging/deb/opt/jay/wheels/
+release/
